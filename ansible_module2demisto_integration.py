@@ -221,11 +221,11 @@ def parseDict(d, depth):
 			markdown += buildValueChain(k, d[k], depth)
 	return markdown
 
-def parseList(l, depth):
+def parseList(rawlist, depth):
 	markdown = ""
-	for value in l:
+	for value in rawlist:
 		if not isinstance(value, (dict, list)):
-			index = l.index(value)
+			index = rawlist.index(value)
 			markdown += buildValueChain(index, value, depth)
 		else:
 			markdown += parseDict(value, depth)
