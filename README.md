@@ -12,11 +12,11 @@ At a high level this tool parses the Ansible module documentation to generate eq
 3. Run ansible_module2demisto_integration.py This will generate and save the resulting XSOAR intergrations in the output folder.
 
 # Limitations
-* Ansible modules that use environment variables are unsupported as this tool does not set environment variables
+* Ansible modules that use environment variables are unsupported as this tool does not set environment variables yet
 * Authentication is limited to only the following options:
-    1. SSH Key
-    2. (preferably) XSOAR instance based inputs eg Username/Password. Instance fields can be definied in definitions.yml
-    3. XSOAR credential manager
+    1. SSH private key
+    2. (preferably) XSOAR integration instance based inputs eg Username/Password fields. Instance fields can be definied in definitions.yml
+    3. XSOAR credential manager of the above
 * File copy Ansible modules can only operate in 'remote src to remote dest' mode. They cannot be used to copy files to the XSOAR engine server.
 * Ansible Shell/Command modules that use free-form syntax for the command don't get parsed correctly and as a result ommited in the intial release of this tool
 * Ansible modules with nested command parameters do not do not have the nested parameters visible in XSOAR
