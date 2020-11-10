@@ -273,7 +273,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     if args.get('concurrency'):
         fork_count = int(args.get('concurrency'))
 
-    inventory: Dict[dict, list] = {}
+    inventory: Dict[dict, list, str] = {}
     inventory['all'] = {}
     inventory['all']['hosts'] = {}
     '''
