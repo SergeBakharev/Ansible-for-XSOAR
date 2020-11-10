@@ -455,7 +455,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     for each_host_event in r.events:
         # Troubleshooting
         # demisto.log("%s: %s\\n" % (each_host_event['event'], each_host_event))
-        if each_host_event['event'] in ("runner_on_ok", "runner_on_unreachable", "runner_on_failed"):
+        if each_host_event['event'] in ["runner_on_ok", "runner_on_unreachable", "runner_on_failed"]:
 
             # parse results
 
