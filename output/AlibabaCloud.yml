@@ -1,0 +1,433 @@
+category: IT Services
+commonfields:
+  id: AlibabaCloud
+  version: -1
+configuration:
+- additionalinfo: Aliyun Cloud access key
+  display: Access Key
+  name: alicloud_access_key
+  required: true
+  type: 0
+- additionalinfo: Aliyun Cloud secret key
+  display: Access Secret Key
+  name: alicloud_secret_key
+  required: true
+  type: 4
+- additionalinfo: Aliyun Cloud region
+  display: Region
+  name: alicloud_region
+  required: true
+  type: 0
+description: Manage Alibaba Cloud Elastic Compute Instances
+display: Alibaba Cloud
+image: data:image/png;base64,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
+name: AlibabaCloud
+script:
+  commands:
+  - arguments:
+    - auto: PREDEFINED
+      default: true
+      defaultValue: present
+      description: The state of the instance after operating.
+      name: state
+      predefined:
+      - present
+      - running
+      - stopped
+      - restarted
+      - absent
+    - description: Aliyun availability zone ID in which to launch the instance. If
+        it is not specified, it will be allocated by system automatically.
+      name: availability_zone
+    - description: Image ID used to launch instances. Required when `state=present`
+        and creating new ECS instances.
+      name: image_id
+    - description: Instance type used to launch instances. Required when `state=present`
+        and creating new ECS instances.
+      name: instance_type
+    - description: A list of security group IDs.
+      name: security_groups
+    - description: The subnet ID in which to launch the instances (VPC).
+      name: vswitch_id
+    - description: The name of ECS instance, which is a string of 2 to 128 Chinese
+        or English characters. It must begin with an uppercase/lowercase letter or
+        a Chinese character and can contain numerals, ".", "_" or "-". It cannot begin
+        with http:// or https://.
+      name: instance_name
+    - description: The description of ECS instance, which is a string of 2 to 256
+        characters. It cannot begin with http:// or https://.
+      name: description
+    - auto: PREDEFINED
+      default: true
+      defaultValue: PayByBandwidth
+      description: Internet charge type of ECS instance.
+      name: internet_charge_type
+      predefined:
+      - PayByBandwidth
+      - PayByTraffic
+    - default: true
+      defaultValue: '200'
+      description: Maximum incoming bandwidth from the public network, measured in
+        Mbps (Megabits per second).
+      name: max_bandwidth_in
+    - default: true
+      defaultValue: '0'
+      description: Maximum outgoing bandwidth to the public network, measured in Mbps
+        (Megabits per second).
+      name: max_bandwidth_out
+    - description: Instance host name.
+      name: host_name
+    - description: The password to login instance. After rebooting instances, modified
+        password will take effect.
+      name: password
+    - auto: PREDEFINED
+      default: true
+      defaultValue: cloud_efficiency
+      description: Category of the system disk.
+      name: system_disk_category
+      predefined:
+      - cloud_efficiency
+      - cloud_ssd
+    - default: true
+      defaultValue: '40'
+      description: Size of the system disk, in GB. The valid values are 40~500.
+      name: system_disk_size
+    - description: Name of the system disk.
+      name: system_disk_name
+    - description: Description of the system disk.
+      name: system_disk_description
+    - default: true
+      defaultValue: '1'
+      description: The number of the new instance. An integer value which indicates
+        how many instances that match `count_tag` should be running. Instances are
+        either created or terminated based on this value.
+      name: count
+    - description: '`count` determines how many instances based on a specific tag
+        criteria should be present. This can be expressed in multiple ways and is
+        shown in the EXAMPLES section. The specified count_tag must already exist
+        or be passed in as the `instance_tags` option. If it is not specified, it
+        will be replaced by `instance_name`.'
+      name: count_tag
+    - default: true
+      defaultValue: 'False'
+      description: Whether allocate a public ip for the new instance.
+      name: allocate_public_ip
+    - auto: PREDEFINED
+      default: true
+      defaultValue: PostPaid
+      description: The charge type of the instance.
+      name: instance_charge_type
+      predefined:
+      - PrePaid
+      - PostPaid
+    - default: true
+      defaultValue: '1'
+      description: 'The charge duration of the instance, in month. Required when `instance_charge_type=PrePaid`.
+
+        The valid value are [1-9, 12, 24, 36].'
+      name: period
+    - default: true
+      defaultValue: 'False'
+      description: Whether automate renew the charge of the instance.
+      name: auto_renew
+    - auto: PREDEFINED
+      description: The duration of the automatic renew the charge of the instance.
+        Required when `auto_renew=True`.
+      name: auto_renew_period
+      predefined:
+      - '1'
+      - '2'
+      - '3'
+      - '6'
+      - '12'
+    - description: A list of instance ids. It is required when need to operate existing
+        instances. If it is specified, `count` will lose efficacy.
+      name: instance_ids
+    - default: true
+      defaultValue: 'False'
+      description: Whether the current operation needs to be execute forcibly.
+      name: force
+    - description: A hash/dictionaries of instance tags, to add to the new instance
+        or for starting/stopping instance by tag. `{"key":"value"}`
+      name: instance_tags
+    - description: The name of key pair which is used to access ECS instance in SSH.
+      name: key_name
+    - description: User-defined data to customize the startup behaviors of an ECS
+        instance and to pass data into an ECS instance. It only will take effect when
+        launching the new ECS instances.
+      name: user_data
+    description: Create, Start, Stop, Restart or Terminate an Instance in ECS. Add
+      or Remove Instance to/from a Security Group.
+    name: ali_instance
+    outputs:
+    - contextPath: AlibabaCloud.instances.availability_zone
+      description: The availability zone of the instance is in.
+      type: string
+    - contextPath: AlibabaCloud.instances.block_device_mappings
+      description: Any block device mapping entries for the instance.
+    - contextPath: AlibabaCloud.instances.cpu
+      description: The CPU core count of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.creation_time
+      description: The time the instance was created.
+      type: string
+    - contextPath: AlibabaCloud.instances.description
+      description: The instance description.
+      type: string
+    - contextPath: AlibabaCloud.instances.eip
+      description: The attribution of EIP associated with the instance.
+    - contextPath: AlibabaCloud.instances.expired_time
+      description: The time the instance will expire.
+      type: string
+    - contextPath: AlibabaCloud.instances.gpu
+      description: The attribution of instance GPU.
+    - contextPath: AlibabaCloud.instances.host_name
+      description: The host name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.id
+      description: Alias of instance_id.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_id
+      description: ECS instance resource ID.
+      type: string
+    - contextPath: AlibabaCloud.instances.image_id
+      description: The ID of the image used to launch the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.inner_ip_address
+      description: The inner IPv4 address of the classic instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_charge_type
+      description: The instance charge type.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_name
+      description: The name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_type
+      description: The instance type of the running instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_charge_type
+      description: The billing method of the network bandwidth.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_in
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_out
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.io_optimized
+      description: Indicates whether the instance is optimized for EBS I/O.
+      type: boolean
+    - contextPath: AlibabaCloud.instances.memory
+      description: Memory size of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.network_interfaces
+      description: One or more network interfaces for the instance.
+    - contextPath: AlibabaCloud.instances.osname
+      description: The operation system name of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.ostype
+      description: The operation system type of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.private_ip_address
+      description: The IPv4 address of the network interface within the subnet.
+      type: string
+    - contextPath: AlibabaCloud.instances.public_ip_address
+      description: The public IPv4 address assigned to the instance
+      type: string
+    - contextPath: AlibabaCloud.instances.resource_group_id
+      description: The id of the resource group to which the instance belongs.
+      type: string
+    - contextPath: AlibabaCloud.instances.security_groups
+      description: One or more security groups for the instance.
+    - contextPath: AlibabaCloud.instances.status
+      description: The current status of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.tags
+      description: Any tags assigned to the instance.
+    - contextPath: AlibabaCloud.instances.vswitch_id
+      description: The ID of the vswitch in which the instance is running.
+      type: string
+    - contextPath: AlibabaCloud.instances.vpc_id
+      description: The ID of the VPC the instance is in.
+  - arguments:
+    - description: Aliyun availability zone ID in which to launch the instance
+      name: availability_zone
+    - description: A list of ECS instance names.
+      name: instance_names
+    - description: A list of ECS instance ids.
+      name: instance_ids
+    - description: A hash/dictionaries of instance tags. `{"key":"value"}`
+      name: instance_tags
+    description: Gather information on instances of Alibaba Cloud ECS.
+    name: ali_instance_info
+    outputs:
+    - contextPath: AlibabaCloud.instances.availability_zone
+      description: The availability zone of the instance is in.
+      type: string
+    - contextPath: AlibabaCloud.instances.block_device_mappings
+      description: Any block device mapping entries for the instance.
+    - contextPath: AlibabaCloud.instances.cpu
+      description: The CPU core count of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.creation_time
+      description: The time the instance was created.
+      type: string
+    - contextPath: AlibabaCloud.instances.description
+      description: The instance description.
+      type: string
+    - contextPath: AlibabaCloud.instances.eip
+      description: The attribution of EIP associated with the instance.
+    - contextPath: AlibabaCloud.instances.expired_time
+      description: The time the instance will expire.
+      type: string
+    - contextPath: AlibabaCloud.instances.gpu
+      description: The attribution of instance GPU.
+    - contextPath: AlibabaCloud.instances.host_name
+      description: The host name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.id
+      description: Alias of instance_id.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_id
+      description: ECS instance resource ID.
+      type: string
+    - contextPath: AlibabaCloud.instances.image_id
+      description: The ID of the image used to launch the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.inner_ip_address
+      description: The inner IPv4 address of the classic instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_charge_type
+      description: The instance charge type.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_name
+      description: The name of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.instance_type
+      description: The instance type of the running instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_charge_type
+      description: The billing method of the network bandwidth.
+      type: string
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_in
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.internet_max_bandwidth_out
+      description: Maximum incoming bandwidth from the internet network.
+      type: number
+    - contextPath: AlibabaCloud.instances.io_optimized
+      description: Indicates whether the instance is optimized for EBS I/O.
+      type: boolean
+    - contextPath: AlibabaCloud.instances.memory
+      description: Memory size of the instance.
+      type: number
+    - contextPath: AlibabaCloud.instances.network_interfaces
+      description: One or more network interfaces for the instance.
+    - contextPath: AlibabaCloud.instances.osname
+      description: The operation system name of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.ostype
+      description: The operation system type of the instance owned.
+      type: string
+    - contextPath: AlibabaCloud.instances.private_ip_address
+      description: The IPv4 address of the network interface within the subnet.
+      type: string
+    - contextPath: AlibabaCloud.instances.public_ip_address
+      description: The public IPv4 address assigned to the instance
+      type: string
+    - contextPath: AlibabaCloud.instances.resource_group_id
+      description: The id of the resource group to which the instance belongs.
+      type: string
+    - contextPath: AlibabaCloud.instances.security_groups
+      description: One or more security groups for the instance.
+    - contextPath: AlibabaCloud.instances.status
+      description: The current status of the instance.
+      type: string
+    - contextPath: AlibabaCloud.instances.tags
+      description: Any tags assigned to the instance.
+    - contextPath: AlibabaCloud.instances.vswitch_id
+      description: The ID of the vswitch in which the instance is running.
+      type: string
+    - contextPath: AlibabaCloud.instances.vpc_id
+      description: The ID of the VPC the instance is in.
+  dockerimage: demisto/ansible-runner
+  runonce: false
+  script: "\nimport json\nimport traceback\nimport ansible_runner\nimport ssh_agent_setup\n\
+    from typing import Any, Dict, Tuple, List, Optional, Union, cast\n\n\n# Dict to\
+    \ Markdown Converter adapted from https://github.com/PolBaladas/torsimany/\ndef\
+    \ dict2md(json_block, depth=0):\n\tmarkdown = \"\"\n\tif isinstance(json_block,\
+    \ dict):\n\t    markdown = parseDict(json_block, depth)\n    if isinstance(json_block,\
+    \ list):\n\t    markdown = parseList(json_block, depth)\n\treturn markdown\n\n\
+    \ndef parseDict(d, depth):\n\tmarkdown = \"\"\n\tfor k in d:\n\t\tif isinstance(d[k],\
+    \ (dict, list)):\n\t\t\tmarkdown += addHeader(k, depth)\n\t\t\tmarkdown += dict2md(d[k],\
+    \ depth + 1)\n\t\telse:\n\t\t\tmarkdown += buildValueChain(k, d[k], depth)\n\t\
+    return markdown\n\ndef parseList(l, depth):\n\tmarkdown = \"\"\n\tfor value in\
+    \ l:\n\t\tif not isinstance(value, (dict, list)):\n\t\t\tindex = l.index(value)\n\
+    \t\t\tmarkdown += buildValueChain(index, value, depth)\n\t\telse:\n\t\t\tmarkdown\
+    \ += parseDict(value, depth)\n\treturn markdown\n\ndef buildHeaderChain(depth):\n\
+    \tlist_tag = '* '\n\thtag = '#'\n\n\tchain = list_tag * (bool(depth)) + htag *\
+    \ (depth + 1) + \\\n\t\t' value ' + (htag * (depth + 1) + '\\n')\n\treturn chain\n\
+    \ndef buildValueChain(key, value, depth):\n\ttab = \"  \"\n\tlist_tag = '* '\n\
+    \n\tchain = tab * (bool(depth - 1)) + list_tag + \\\n\t\tstr(key) + \": \" + str(value)\
+    \ + \"\\n\"\n\treturn chain\n\ndef addHeader(value, depth):\n\tchain = buildHeaderChain(depth)\n\
+    \tchain = chain.replace('value', value.title())\n\treturn chain\n\n\n# Remove\
+    \ ansible branding from results\ndef rec_ansible_key_strip(obj):\n    if isinstance(obj,\
+    \ dict):\n        return {key.replace('ansible_', ''): rec_ansible_key_strip(val)\
+    \ for key, val in obj.items()}\n    return obj\n\n\n\n# COMMAND FUNCTIONS\n\n\n\
+    def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandResults:\n\
+    \n    readable_output = \"\"\n    sshkey = \"\" \n    fork_count = 1   # default\
+    \ to executing against 1 host at a time\n\n    if args.get('concurrency'):\n \
+    \       fork_count = int(args.get('concurrency'))\n\n    inventory = {}\n    inventory['all']\
+    \ = {}\n    inventory['all']['hosts'] = {}\n    \n    inventory['all']['hosts']['localhost']\
+    \ = {}\n    inventory['all']['hosts']['localhost']['ansible_connection'] = 'local'\n\
+    \            \n    module_args = \"\"\n    # build module args list\n    for arg_key,\
+    \ arg_value in args.items():\n        # skip hardcoded host arg, as it doesn't\
+    \ related to module\n        if arg_key == 'host':\n            continue\n\n \
+    \       module_args += \"%s=\\\"%s\\\" \" % (arg_key, arg_value)\n    # If this\
+    \ isn't host based, then all the integratation parms will be used as command args\n\
+    \    for arg_key, arg_value in demisto.params().items():\n        module_args\
+    \ += \"%s=\\\"%s\\\" \" % (arg_key, arg_value)\n\n        \n\n    r = ansible_runner.run(inventory=inventory,host_pattern='all',\
+    \ module=command, quiet=True, omit_event_data=True, ssh_key=sshkey, module_args=module_args,\
+    \ forks=fork_count)\n\n    results = []\n    for each_host_event in r.events:\n\
+    \        # Troubleshooting\n        # demisto.log(\"%s: %s\\n\" % (each_host_event['event'],\
+    \ each_host_event))\n        if each_host_event['event'] in (\"runner_on_ok\"\
+    , \"runner_on_unreachable\", \"runner_on_failed\"):\n\n            # parse results\n\
+    \n            result = json.loads('{' + each_host_event['stdout'].split('{',1)[1])\n\
+    \            host = each_host_event['stdout'].split('|',1)[0].strip()\n      \
+    \      status = each_host_event['stdout'].replace('=>', '|').split('|',3)[1]\n\
+    \n            # if successful build outputs\n            if each_host_event['event']\
+    \ == \"runner_on_ok\":\n                if 'fact' in command:\n              \
+    \      result = result['ansible_facts']\n                else:\n             \
+    \       if result.get(command) != None:\n                        result = result[command]\n\
+    \                    else:\n                        result.pop(\"ansible_facts\"\
+    , None)\n\n                result = rec_ansible_key_strip(result)\n\n        \
+    \        if host != \"localhost\":\n                    readable_output += \"\
+    # %s - %s\\n\" % (host, status)\n                else:\n                    #\
+    \ This is integration is not host based\n                    readable_output +=\
+    \ \"# %s\\n\" % status\n\n                readable_output += dict2md(result)\n\
+    \n                # add host and status to result\n                result['host']\
+    \ = host\n                result['status'] = status\n\n                results.append(result)\n\
+    \            if each_host_event['event'] == \"runner_on_unreachable\":\n     \
+    \           msg = \"Host %s unreachable\\nError Details: %s\" % (host, result)\n\
+    \                return_error(msg)\n\n            if each_host_event['event']\
+    \ == \"runner_on_failed\":\n                msg = \"Host %s failed running command\\\
+    nError Details: %s\" % (host, result)\n                return_error(msg)\n   \
+    \ # This is integration is not host based and always runs against localhost\n\
+    \    results = results['localhost']\n    \n    return CommandResults(\n      \
+    \  readable_output=readable_output,\n        outputs_prefix=integration_name +\
+    \ '.' + command,\n        outputs_key_field='',\n        outputs=results\n   \
+    \ )\n\n\n\n# MAIN FUNCTION\n\n\ndef main() -> None:\n    \"\"\"main function,\
+    \ parses params and runs command functions\n\n    :return:\n    :rtype:\n    \"\
+    \"\"\n\n    # SSH Key integration requires ssh_agent to be running in the background\n\
+    \    ssh_agent_setup.setup()\n\n    try:\n\n        if demisto.command() == 'test-module':\n\
+    \            # This is the call made when pressing the integration Test button.\n\
+    \            return_results('ok')\n        elif demisto.command() == 'ali_instance':\n\
+    \            return_results(generic_ansible('alibabacloud', 'ali_instance', demisto.args()))\n\
+    \        elif demisto.command() == 'ali_instance_info':\n            return_results(generic_ansible('alibabacloud',\
+    \ 'ali_instance_info', demisto.args()))\n    # Log exceptions and return errors\n\
+    \    except Exception as e:\n        demisto.error(traceback.format_exc())  #\
+    \ print the traceback\n        return_error(f'Failed to execute {demisto.command()}\
+    \ command.\\nError:\\n{str(e)}')\n\n\n# ENTRY POINT\n\n\nif __name__ in ('__main__',\
+    \ '__builtin__', 'builtins'):\n    main() "
+  subtype: python3
+  type: python
