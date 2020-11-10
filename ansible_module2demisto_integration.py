@@ -59,7 +59,7 @@ with open(DEFINITION_FILE) as f:
         # Integration configuration elements
         # See https://xsoar.pan.dev/docs/integrations/yaml-file#configuration for more details
         integration['configuration'] = []
-        if integration_def.get('config') != None:
+        if integration_def.get('config') is not None:
             for config in integration_def.get('config'):
                 integration['configuration'].append(config)
 
@@ -86,7 +86,7 @@ with open(DEFINITION_FILE) as f:
 
             command = {}
 
-            if integration_def.get('command_prefix') != None:
+            if integration_def.get('command_prefix') is not None:
                 command_prefix = integration_def.get('command_prefix')
             else:
                 if len(integration_def.get('name').split(' ')) == 1:  # If the definition `name` is single word then trust the caps
@@ -114,11 +114,11 @@ with open(DEFINITION_FILE) as f:
                 argument['isArray'] = True
                 command['arguments'].append(argument)
 
-            if options != None:
+            if options is not None:
                 for arg, option in options.items():
 
                     # Skip args that the definition says to ignore
-                    if integration_def.get('ignored_args') != None:
+                    if integration_def.get('ignored_args') is not None:
                         if arg in integration_def.get('ignored_args'):
                             continue
 
@@ -147,11 +147,11 @@ with open(DEFINITION_FILE) as f:
                     if option.get('required') == True:
                         argument['required'] = True
 
-                    if option.get('default') != None:
+                    if option.get('default') is not None:
                         argument['defaultValue'] = str(option.get('default'))
                         argument['default'] = True
 
-                    if option.get('choices') != None:
+                    if option.get('choices') is not None:
                         argument['predefined'] = []
                         argument['auto'] = "PREDEFINED"
                         for choice in option.get('choices'):
@@ -164,11 +164,11 @@ with open(DEFINITION_FILE) as f:
 
             # Outputs
             command['outputs'] = []
-            if returndocs != None:
+            if returndocs is not None:
                 returndocs_dict = yaml.load(returndocs, Loader=yaml.Loader)
-                if returndocs_dict != None:
+                if returndocs_dict is not None:
                     for output, details in returndocs_dict.items():
-                        if details.get('contains') != None:
+                        if details.get('contains') is not None:
                             for item, detail_type in details.get('contains').items():
                                 output_to_add = {}
 
@@ -277,7 +277,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     inventory['all']['hosts'] = {}
     '''
 
-        if integration_def.get('hostbasedtarget') != None:
+        if integration_def.get('hostbasedtarget') is not None:
             integration_script +='''
     if type(args['host']) is list:
         # host arg can be a array of multiple hosts
@@ -467,7 +467,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
                 if 'fact' in command:
                     result = result['ansible_facts']
                 else:
-                    if result.get(command) != None:
+                    if result.get(command) is not None:
                         result = result[command]
                     else:
                         result.pop("ansible_facts", None)
@@ -530,7 +530,7 @@ def main() -> None:
         
         for ansible_module in integration_def.get('ansible_modules'):
 
-            if integration_def.get('command_prefix') != None:
+            if integration_def.get('command_prefix') is not None:
                 command_prefix = integration_def.get('command_prefix')
             else:
                 if len(integration_def.get('name').split(' ')) == 1:  # If the definition `name` is single word then trust the caps
