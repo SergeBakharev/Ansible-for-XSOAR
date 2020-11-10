@@ -273,7 +273,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     if args.get('concurrency'):
         fork_count = int(args.get('concurrency'))
 
-    inventory = {}
+    inventory: Dict[dict, list] = {}
     inventory['all'] = {}
     inventory['all']['hosts'] = {}
     '''
@@ -498,7 +498,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
         if integration_def.get('hostbasedtarget') == None:
             integration_script += '''
     # This is integration is not host based and always runs against localhost
-    results = results['localhost']
+    results = results[0]
     '''
         integration_script += '''
     return CommandResults(
