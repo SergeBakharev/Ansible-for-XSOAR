@@ -564,7 +564,7 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         integration['script'] = {
             'type' : "python",
             'subtype' : "python3",
-            'dockerimage' : "demisto/ansible-runner",
+            'dockerimage' : "demisto/ansible-runner:1.0.0.13199",
             'runonce' : False,
             'commands': commands,
             'script' : integration_script,
