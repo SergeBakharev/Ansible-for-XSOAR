@@ -198,6 +198,7 @@ import json
 import traceback
 import ansible_runner
 import ssh_agent_setup
+from typing import Dict
 
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
