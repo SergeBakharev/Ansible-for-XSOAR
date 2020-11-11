@@ -545,7 +545,7 @@
       additionalinfo: The password to access the vSphere vCenter or ESXi server.
     - display: Validate Certs
       name: validate_certs
-      type: 8
+      type: 4
       required: true
       defaultvalue: "True"
       additionalinfo: Allows connection when SSL certificates are not valid. Set to `false` when certificates are not trusted.
@@ -706,7 +706,7 @@
       additionalinfo: Token used to authenticate with the API. 
     - display: Validate Certs
       name: validate_certs
-      type: 8
+      type: 4
       required: true
       defaultvalue: "False"
       additionalinfo: Allows connection when SSL certificates are not valid. Set to `false` when certificates are not trusted.
