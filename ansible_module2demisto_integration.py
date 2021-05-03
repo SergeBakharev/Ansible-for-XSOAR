@@ -174,7 +174,18 @@ with open(DEFINITION_FILE) as f:
                         output_to_add = {}
                         if details is not None:
                             output_to_add['contextPath'] = str("%s.%s.%s" % (integration['name'], ansible_module, output))
-                            output_to_add['description'] = str(details.get('description'))
+
+                            # remove ansible link markup 
+                            # https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html#linking-within-module-documentation
+                            if type(details.get('description')) == list:
+                                # Do something if it is a list
+                                output_to_add['description'] = ""
+                                for line in details.get('description'):
+                                    clean_line_of_description = re.sub('[ILUCMB]\((.+?)\)','`\g<1>`', line) 
+                                    output_to_add['description'] = output_to_add['description'] + "\n" + clean_line_of_description
+                            else:
+                                clean_line_of_description = re.sub('[ILUCMB]\((.+?)\)','`\g<1>`',str(details.get('description'))) 
+                                output_to_add['description'] = clean_line_of_description
 
                             if details.get('type') == "str":
                                 output_to_add['type'] = "string"
