@@ -3,8 +3,8 @@ from ansible.plugins.loader import fragment_loader
 from ansible.utils import plugin_docs
 import os
 import re
-from stringcase import snakecase
-from pprint import pprint
+from stringcase import spinalcase
+from pathlib import Path
 
 # Constants
 # The Ansible dir is in the same folder as this script
@@ -12,6 +12,9 @@ BASE_PATH = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in the
 DEFINITION_FILE = 'definitions.yml'  # the translation definition file
 OUTPUT_DIR = os.path.join(BASE_PATH, 'output/')
+ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.19017'  # The tag of demisto/ansible-runner to use
+ANSIBLE_ONLINE_DOCS_URL = 'https://docs.ansible.com/ansible/2.9/modules/'  # The URL of the online module documentation
+
 
 
 def find_module_file(module_name, modules_parent_path):
@@ -92,14 +95,15 @@ with open(DEFINITION_FILE) as f:
                 if len(integration_def.get('name').split(' ')) == 1:  # If the definition `name` is single word then trust the caps
                     command_prefix = integration['name'].lower()
                 else:
-                    command_prefix = snakecase(integration['name'])
+                    command_prefix = spinalcase(integration['name'])
 
 
-            if not ansible_module.startswith(command_prefix + '_'):
-                command['name'] = command_prefix + '_' + ansible_module
+            if not spinalcase(ansible_module).startswith(command_prefix + '-'):
+                command['name'] = command_prefix + '-' + spinalcase(ansible_module)
             else:
-                command['name'] = ansible_module
-            command['description'] = str(doc.get('short_description'))
+                command['name'] = spinalcase(ansible_module)
+            module_online_help = "%s%s_module.html" % (ANSIBLE_ONLINE_DOCS_URL, ansible_module)
+            command['description'] = str(doc.get('short_description')) + "\n Further documentation availiable at " + module_online_help
             command['arguments'] = []
 
             # Arguments
@@ -149,7 +153,6 @@ with open(DEFINITION_FILE) as f:
 
                     if option.get('default') is not None:
                         argument['defaultValue'] = str(option.get('default'))
-                        argument['default'] = True
 
                     if option.get('choices') is not None:
                         argument['predefined'] = []
@@ -168,26 +171,27 @@ with open(DEFINITION_FILE) as f:
                 returndocs_dict = yaml.load(returndocs, Loader=yaml.Loader)
                 if returndocs_dict is not None:
                     for output, details in returndocs_dict.items():
-                        if details.get('contains') is not None:
-                            for item, detail_type in details.get('contains').items():
-                                output_to_add = {}
+                        output_to_add = {}
+                        if details is not None:
+                            output_to_add['contextPath'] = str("%s.%s.%s" % (integration['name'], ansible_module, output))
+                            output_to_add['description'] = str(details.get('description'))
 
-                                output_to_add['contextPath'] = str("%s.%s.%s" % (integration['name'], output, item))
-                                output_to_add['description'] = str(detail_type.get('description'))
+                            if details.get('type') == "str":
+                                output_to_add['type'] = "string"
+                            
+                            elif details.get('type') == "int":
+                                output_to_add['type'] = "number"
 
-                                if detail_type.get('type') == "str":
-                                    output_to_add['type'] = "string"
-                                
-                                elif detail_type.get('type') == "int":
-                                    output_to_add['type'] = "number"
+                            # Don't think Ansible has any kind of datetime attribute but just in case...
+                            elif details.get('type') == "datetime":
+                                output_to_add['type'] = "date"
 
-                                # Don't think Ansible has any kind of datetime attribute but just in case...
-                                elif detail_type.get('type') == "datetime":
-                                    output_to_add['type'] = "date"
+                            elif details.get('type') == "bool":
+                                output_to_add['type'] = "boolean"
 
-                                elif detail_type.get('type') == "bool":
-                                    output_to_add['type'] = "boolean"
-                                command['outputs'].append(output_to_add)                
+                            else:  # If the output is any other type it doesn't directly map to a XSOAR type
+                                output_to_add['type'] = "unknown"  
+                            command['outputs'].append(output_to_add)                
 
             commands.append(command)
 
@@ -537,13 +541,13 @@ def main() -> None:
                 if len(integration_def.get('name').split(' ')) == 1:  # If the definition `name` is single word then trust the caps
                     command_prefix = integration['name'].lower()
                 else:
-                    command_prefix = snakecase(integration['name'])
+                    command_prefix = spinalcase(integration['name'])
 
             demisto_command = ""
-            if not ansible_module.startswith(command_prefix + '_'):
-                demisto_command = command_prefix + '_' + ansible_module
+            if not spinalcase(ansible_module).startswith(command_prefix + '-'):
+                demisto_command = command_prefix + '-' + spinalcase(ansible_module)
             else:
-                demisto_command = ansible_module
+                demisto_command = spinalcase(ansible_module)
 
             integration_script += "\n        elif demisto.command() == '%s':\n            return_results(generic_ansible('%s', '%s', demisto.args()))" % (demisto_command, integration['name'].lower(), ansible_module,)
 
@@ -564,13 +568,13 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         integration['script'] = {
             'type' : "python",
             'subtype' : "python3",
-            'dockerimage' : "demisto/ansible-runner:1.0.0.13885",
+            'dockerimage' : "demisto/ansible-runner:%s" % ANSIBLE_RUNNER_DOCKER_VERSION,
             'runonce' : False,
             'commands': commands,
             'script' : integration_script,
         }
 
-        # TODO Make the OUTPUT_DIR if it doesn't already exist
+        Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)  # Make the OUTPUT_DIR if it doesn't already exist
         filename = os.path.join(OUTPUT_DIR, integration['name'] + '.yml')
         with open(filename, 'w') as outfile:
             yaml.dump(integration, outfile, default_flow_style=False)
