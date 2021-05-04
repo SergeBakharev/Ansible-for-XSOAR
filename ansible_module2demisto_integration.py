@@ -48,8 +48,6 @@ with open(DEFINITION_FILE) as f:
             integration['name'] = integration_def.get('name').replace(' ', '')
         integration['category'] = integration_def.get('category')
         integration['description'] = integration_def.get('description')
-        if integration_def.get('detaileddescription') is not None:
-            integration['detaileddescription'] = integration_def.get('detaileddescription')
         integration['commonfields'] = {
         "id": integration['name'],
         "version": -1
@@ -78,6 +76,7 @@ with open(DEFINITION_FILE) as f:
             integration['configuration'].append(config)
         
         commands = []
+        command_examples = []
         for ansible_module in integration_def.get('ansible_modules'):
             print("Adding Module: %s" % ansible_module)
 
@@ -205,6 +204,42 @@ with open(DEFINITION_FILE) as f:
                             command['outputs'].append(output_to_add)                
 
             commands.append(command)
+
+            # Create example XSOAR command
+            try: 
+                examples_dict = yaml.load(examples, Loader=yaml.Loader)
+
+            # Sometimes there is more than one yaml doc in examples, not sure why. Lets grab just the first if that happens
+            except yaml.composer.ComposerError as e:  
+                examples_dict = list(yaml.load_all(examples, Loader=yaml.Loader))[0]
+
+            if examples_dict is not None:
+                if type(examples_dict) == list:
+                    examples_dict = examples_dict[0]  # If there are multiple exmaples just use the first
+
+                # Get actual example
+                examples_dict = examples_dict.get(str(ansible_module))
+                
+
+
+                example_command = "!" + command['name'] + " "  # Start of command
+
+                if integration_def.get('hostbasedtarget') in ("ssh", "winrm", "nxos", "ios"):  # Add a example host target
+                    example_command += "host=\"192.168.1.125\" "
+
+                if examples_dict is not None:
+                    for arg, value in examples_dict.items():
+                        # Skip args that the definition says to ignore
+                        if integration_def.get('ignored_args') is not None:
+                            if arg in integration_def.get('ignored_args'):
+                                continue
+                    
+                        value = str(value).replace("\n", "\"")
+                        example_command += "%s=\"%s\" " % (arg, value)
+
+                command_examples.append(example_command + "\n")
+
+
 
         
         # Generate python script
@@ -589,7 +624,6 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             'script' : "",    # Output as a seperate .py file
         }
 
-
         # Save output files
         output_path = os.path.join(OUTPUT_DIR, integration['name'])  # Create a folder per intergration
         Path(output_path).mkdir(parents=True, exist_ok=True)  # Make the output path if it doesn't already exist
@@ -610,5 +644,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             with open(filename, 'wb') as outfile:
                 outfile.write(base64.b64decode(integration_def.get('image')))
         
-        
+        # save the example commands
+        filename = os.path.join(output_path, integration['name'] + '_commands.txt')
+        with open(filename, 'w') as outfile:
+            outfile.writelines(command_examples)
         print("Integration: %s saved to folder: %s" % (integration['display'], output_path))
