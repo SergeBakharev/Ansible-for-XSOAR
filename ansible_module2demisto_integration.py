@@ -55,6 +55,7 @@ with open(DEFINITION_FILE) as f:
         "version": -1
         }
 
+        integration['fromversion'] = "6.0.0"  # minimum version
         print("Creating Integration: %s" % integration['display'])
 
 
@@ -207,66 +208,70 @@ with open(DEFINITION_FILE) as f:
 
         
         # Generate python script
-        integration_script = '''
-import json
+        integration_script = '''import json
 import traceback
 import ansible_runner
 import ssh_agent_setup
 from typing import Dict, cast
+
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
 def dict2md(json_block, depth=0):
-	markdown = ""
-	if isinstance(json_block, dict):
-	    markdown = parseDict(json_block, depth)
+    markdown = ""
+    if isinstance(json_block, dict):
+        markdown = parseDict(json_block, depth)
     if isinstance(json_block, list):
-	    markdown = parseList(json_block, depth)
-	return markdown
+        markdown = parseList(json_block, depth)
+    return markdown
 
 
 def parseDict(d, depth):
-	markdown = ""
-	for k in d:
-		if isinstance(d[k], (dict, list)):
-			markdown += addHeader(k, depth)
-			markdown += dict2md(d[k], depth + 1)
-		else:
-			markdown += buildValueChain(k, d[k], depth)
-	return markdown
+    markdown = ""
+    for k in d:
+        if isinstance(d[k], (dict, list)):
+            markdown += addHeader(k, depth)
+            markdown += dict2md(d[k], depth + 1)
+        else:
+            markdown += buildValueChain(k, d[k], depth)
+    return markdown
+
 
 def parseList(rawlist, depth):
-	markdown = ""
-	for value in rawlist:
-		if not isinstance(value, (dict, list)):
-			index = rawlist.index(value)
-			markdown += buildValueChain(index, value, depth)
-		else:
-			markdown += parseDict(value, depth)
-	return markdown
+    markdown = ""
+    for value in rawlist:
+        if not isinstance(value, (dict, list)):
+            index = rawlist.index(value)
+            markdown += buildValueChain(index, value, depth)
+        else:
+            markdown += parseDict(value, depth)
+    return markdown
+
 
 def buildHeaderChain(depth):
-	list_tag = '* '
-	htag = '#'
+    list_tag = '* '
+    htag = '#'
 
-	chain = list_tag * (bool(depth)) + htag * (depth + 1) + \\
-		' value ' + (htag * (depth + 1) + '\\n')
-	return chain
+    chain = list_tag * (bool(depth)) + htag * (depth + 1) + \\
+        ' value ' + (htag * (depth + 1) + '\\n')
+    return chain
+
 
 def buildValueChain(key, value, depth):
-	tab = "  "
-	list_tag = '* '
+    tab = "  "
+    list_tag = '* '
 
-	chain = tab * (bool(depth - 1)) + list_tag + \\
-		str(key) + ": " + str(value) + "\\n"
-	return chain
+    chain = tab * (bool(depth - 1)) + list_tag + \\
+        str(key) + ": " + str(value) + "\\n"
+    return chain
+
 
 def addHeader(value, depth):
-	chain = buildHeaderChain(depth)
-	chain = chain.replace('value', value.title())
-	return chain
+    chain = buildHeaderChain(depth)
+    chain = chain.replace('value', value.title())
+    return chain
 
 
 # Remove ansible branding from results
@@ -276,14 +281,13 @@ def rec_ansible_key_strip(obj):
     return obj
 
 
-
 # COMMAND FUNCTIONS
 
 
 def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = ""
-    sshkey = "" 
+    sshkey = ""
     fork_count = 1   # default to executing against 1 host at a time
 
     if args.get('concurrency'):
@@ -306,7 +310,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
     for host in hosts:
         new_host = {}
         new_host['ansible_host'] = host
-        
+
         if ":" in host:
             address = host.split(':')
             new_host['ansible_port'] = address[1]
@@ -350,7 +354,6 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
 
             new_host['ansible_user'] = username
             new_host['ansible_password'] = password
-
 
         inventory['all']['hosts'][host] = new_host'''
         elif integration_def.get('hostbasedtarget') == "winrm":
@@ -465,7 +468,8 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
 
         integration_script += '''
 
-    r = ansible_runner.run(inventory=inventory,host_pattern='all', module=command, quiet=True, omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
+    r = ansible_runner.run(inventory=inventory, host_pattern='all', module=command, quiet=True,
+                           omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
 
     results = []
     for each_host_event in r.events:
@@ -475,9 +479,9 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
 
             # parse results
 
-            result = json.loads('{' + each_host_event['stdout'].split('{',1)[1])
-            host = each_host_event['stdout'].split('|',1)[0].strip()
-            status = each_host_event['stdout'].replace('=>', '|').split('|',3)[1]
+            result = json.loads('{' + each_host_event['stdout'].split('{', 1)[1])
+            host = each_host_event['stdout'].split('|', 1)[0].strip()
+            status = each_host_event['stdout'].replace('=>', '|').split('|', 3)[1]
 
             # if successful build outputs
             if each_host_event['event'] == "runner_on_ok":
@@ -523,7 +527,6 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
         outputs_key_field='',
         outputs=results
     )
-
 
 
 # MAIN FUNCTION
@@ -574,7 +577,7 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main() '''
+    main()'''
     
         
         integration['script'] = {
@@ -587,13 +590,8 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
         }
 
 
+        # Save output files
         output_path = os.path.join(OUTPUT_DIR, integration['name'])  # Create a folder per intergration
-        
-        #  Files to be made in folder
-        # `integration_name`_image.png  -  source: integration_def.get('image')
-        # `integration_name`.py   - source: integration_script
-        # `integration_name`.yml
-
         Path(output_path).mkdir(parents=True, exist_ok=True)  # Make the output path if it doesn't already exist
 
         # save the .py
