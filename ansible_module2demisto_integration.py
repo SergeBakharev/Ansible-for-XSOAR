@@ -5,11 +5,12 @@ import os
 import re
 from stringcase import spinalcase
 from pathlib import Path
+import base64
 
 # Constants
 # The Ansible dir is in the same folder as this script
 BASE_PATH = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
-MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in the
+MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in this location
 DEFINITION_FILE = 'definitions.yml'  # the translation definition file
 OUTPUT_DIR = os.path.join(BASE_PATH, 'output/')
 ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.19017'  # The tag of demisto/ansible-runner to use
@@ -49,8 +50,6 @@ with open(DEFINITION_FILE) as f:
         integration['description'] = integration_def.get('description')
         if integration_def.get('detaileddescription') is not None:
             integration['detaileddescription'] = integration_def.get('detaileddescription')
-        if integration_def.get('image') is not None:
-            integration['image'] = integration_def.get('image')
         integration['commonfields'] = {
         "id": integration['name'],
         "version": -1
@@ -214,6 +213,8 @@ import traceback
 import ansible_runner
 import ssh_agent_setup
 from typing import Dict, cast
+import demistomock as demisto  # noqa: F401
+from CommonServerPython import *  # noqa: F401
 
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
@@ -582,11 +583,34 @@ if __name__ in ('__main__', '__builtin__', 'builtins'):
             'dockerimage' : "demisto/ansible-runner:%s" % ANSIBLE_RUNNER_DOCKER_VERSION,
             'runonce' : False,
             'commands': commands,
-            'script' : integration_script,
+            'script' : "",    # Output as a seperate .py file
         }
 
-        Path(OUTPUT_DIR).mkdir(parents=True, exist_ok=True)  # Make the OUTPUT_DIR if it doesn't already exist
-        filename = os.path.join(OUTPUT_DIR, integration['name'] + '.yml')
+
+        output_path = os.path.join(OUTPUT_DIR, integration['name'])  # Create a folder per intergration
+        
+        #  Files to be made in folder
+        # `integration_name`_image.png  -  source: integration_def.get('image')
+        # `integration_name`.py   - source: integration_script
+        # `integration_name`.yml
+
+        Path(output_path).mkdir(parents=True, exist_ok=True)  # Make the output path if it doesn't already exist
+
+        # save the .py
+        filename = os.path.join(output_path, integration['name'] + '.py')
+        with open(filename, 'w') as outfile:
+            outfile.writelines(integration_script)
+
+        # save the .yml definition
+        filename = os.path.join(output_path, integration['name'] + '.yml')
         with open(filename, 'w') as outfile:
             yaml.dump(integration, outfile, default_flow_style=False)
-            print("Integration: %s saved to file: %s" % (integration['display'], filename))
+
+        # save the .png 
+        if integration_def.get('image') is not None:
+            filename = os.path.join(output_path, integration['name'] + '_image.png')
+            with open(filename, 'wb') as outfile:
+                outfile.write(base64.b64decode(integration_def.get('image')))
+        
+        
+        print("Integration: %s saved to folder: %s" % (integration['display'], output_path))
