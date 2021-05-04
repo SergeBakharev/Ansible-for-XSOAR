@@ -235,6 +235,7 @@ with open(DEFINITION_FILE) as f:
                                 continue
                     
                         value = str(value).replace("\n", "\"")
+                        value = str(value).replace("\\", "\\\\")
                         example_command += "%s=\"%s\" " % (arg, value)
 
                 command_examples.append(example_command + "\n")
