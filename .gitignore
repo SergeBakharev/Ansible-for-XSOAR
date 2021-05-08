@@ -1,2 +1,3 @@
 ansible/*
+content/Packs/Ansible_Powered_Integrations/*
 output/*
