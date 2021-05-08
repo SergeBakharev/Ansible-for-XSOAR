@@ -12,7 +12,7 @@ import base64
 BASE_PATH = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in this location
 DEFINITION_FILE = 'definitions.yml'  # the translation definition file
-OUTPUT_DIR = os.path.join(BASE_PATH, 'output/')
+OUTPUT_DIR = os.path.join(BASE_PATH, 'content/Packs/Ansible_Powered_Integrations/Integrations/')
 ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.19017'  # The tag of demisto/ansible-runner to use
 ANSIBLE_ONLINE_DOCS_URL = 'https://docs.ansible.com/ansible/2.9/modules/'  # The URL of the online module documentation
 
@@ -208,32 +208,23 @@ with open(DEFINITION_FILE) as f:
             # Create example XSOAR command
             try: 
                 examples_dict = yaml.load(examples, Loader=yaml.Loader)
-
             # Sometimes there is more than one yaml doc in examples, not sure why. Lets grab just the first if that happens
             except yaml.composer.ComposerError as e:  
                 examples_dict = list(yaml.load_all(examples, Loader=yaml.Loader))[0]
-
             if examples_dict is not None:
                 if type(examples_dict) == list:
                     examples_dict = examples_dict[0]  # If there are multiple exmaples just use the first
-
                 # Get actual example
                 examples_dict = examples_dict.get(str(ansible_module))
-                
-
-
                 example_command = "!" + command['name'] + " "  # Start of command
-
                 if integration_def.get('hostbasedtarget') in ("ssh", "winrm", "nxos", "ios"):  # Add a example host target
                     example_command += "host=\"192.168.1.125\" "
-
                 if examples_dict is not None:
                     for arg, value in examples_dict.items():
                         # Skip args that the definition says to ignore
                         if integration_def.get('ignored_args') is not None:
                             if arg in integration_def.get('ignored_args'):
                                 continue
-                    
                         value = str(value).replace("\n", "\"")
                         value = str(value).replace("\\", "\\\\")
                         example_command += "%s=\"%s\" " % (arg, value)
@@ -253,71 +244,8 @@ from typing import Dict, cast
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
-
-# Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
-def dict2md(json_block, depth=0):
-    markdown = ""
-    if isinstance(json_block, dict):
-        markdown = parseDict(json_block, depth)
-    if isinstance(json_block, list):
-        markdown = parseList(json_block, depth)
-    return markdown
-
-
-def parseDict(d, depth):
-    markdown = ""
-    for k in d:
-        if isinstance(d[k], (dict, list)):
-            markdown += addHeader(k, depth)
-            markdown += dict2md(d[k], depth + 1)
-        else:
-            markdown += buildValueChain(k, d[k], depth)
-    return markdown
-
-
-def parseList(rawlist, depth):
-    markdown = ""
-    for value in rawlist:
-        if not isinstance(value, (dict, list)):
-            index = rawlist.index(value)
-            markdown += buildValueChain(index, value, depth)
-        else:
-            markdown += parseDict(value, depth)
-    return markdown
-
-
-def buildHeaderChain(depth):
-    list_tag = '* '
-    htag = '#'
-
-    chain = list_tag * (bool(depth)) + htag * (depth + 1) + \\
-        ' value ' + (htag * (depth + 1) + '\\n')
-    return chain
-
-
-def buildValueChain(key, value, depth):
-    tab = "  "
-    list_tag = '* '
-
-    chain = tab * (bool(depth - 1)) + list_tag + \\
-        str(key) + ": " + str(value) + "\\n"
-    return chain
-
-
-def addHeader(value, depth):
-    chain = buildHeaderChain(depth)
-    chain = chain.replace('value', value.title())
-    return chain
-
-
-# Remove ansible branding from results
-def rec_ansible_key_strip(obj):
-    if isinstance(obj, dict):
-        return {key.replace('ansible_', ''): rec_ansible_key_strip(val) for key, val in obj.items()}
-    return obj
-
-
-# COMMAND FUNCTIONS
+# Import Generated code
+from AnsibleApiModule import *  # noqa: E402
 
 
 def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandResults:
