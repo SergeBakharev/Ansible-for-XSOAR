@@ -32,16 +32,38 @@ def parseList(rawlist, depth):
             index = rawlist.index(value)
             markdown += buildValueChain(index, value, depth)
         else:
+            header_value = find_header_in_dict(value)
+            if header_value is None:
+                header_value = "list"
+
+            markdown += addHeader(header_value, depth)
             markdown += parseDict(value, depth)
     return markdown
 
+
+def find_header_in_dict(rawdict):
+    header = None
+    # Finds a suitible value to use as a header
+    if not isinstance(rawdict, dict):
+        return  header # Not a dict, nothing to do
+
+    id_search = [val for key, val in rawdict.items() if 'id' in key]
+    name_search = [val for key, val in rawdict.items() if 'name' in key]
+
+    if id_search:
+        header = id_search[0]
+    if name_search:
+        header = name_search[0]
+
+    return header
+            
 
 def buildHeaderChain(depth):
     list_tag = '* '
     htag = '#'
 
     chain = list_tag * (bool(depth)) + htag * (depth + 1) + \
-        ' value ' + (htag * (depth + 1) + '\\n')
+        ' value ' + (htag * (depth + 1) + '\n')
     return chain
 
 
@@ -50,7 +72,7 @@ def buildValueChain(key, value, depth):
     list_tag = '* '
 
     chain = tab * (bool(depth - 1)) + list_tag + \
-        str(key) + ": " + str(value) + "\\n"
+        str(key) + ": " + str(value) + "\n"
     return chain
 
 
@@ -71,6 +93,8 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
     host_types = ['ssh', 'winrm', 'nxos', 'ios', 'local']
     if host_type not in host_types:
         raise ValueError("Invalid host type. Expected one of: %s" % host_types)
+
+    sshkey = ""
 
     inventory: Dict[dict, str] = {}
     inventory['all'] = {}
@@ -106,7 +130,6 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
             # Common SSH based auth options
             if host_type in ['ssh','nxos', 'ios']:
                 # SSH Key saved in credential manager selection
-                sshkey = ""
                 if demisto.params().get('creds', {}).get('credentials').get('sshkey'):
                     username = demisto.params().get('creds', {}).get('credentials').get('user')
                     sshkey = demisto.params().get('creds', {}).get('credentials').get('sshkey')
@@ -195,6 +218,11 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
 
         module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
+        # If this isn't host based, then all the integratation parms will be used as command args
+    if host_type == 'local': 
+        for arg_key, arg_value in demisto.params().items():
+            module_args += "%s=\"%s\" " % (arg_key, arg_value)
+
     r = ansible_runner.run(inventory=inventory, host_pattern='all', module=command, quiet=True,
                            omit_event_data=True, ssh_key=sshkey, module_args=module_args, forks=fork_count)
 
@@ -230,9 +258,10 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
 
                 readable_output += dict2md(result)
 
-                # add host and status to result
-                result['host'] = host
-                result['status'] = status
+                # add host and status to result if it is a dict. Some ansible modules return a list
+                if type(result) == dict:
+                    result['host'] = host
+                    result['status'] = status.strip()
 
                 results.append(result)
             if each_host_event['event'] == "runner_on_unreachable":
