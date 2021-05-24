@@ -67,7 +67,7 @@ with open(DEFINITION_FILE) as f:
         # Add static tunables relating to host based targets
         if integration_def.get('hostbasedtarget'):
             config = {}
-            config['display'] = "Concurrecy Factor"
+            config['display'] = "Concurrency Factor"
             config['name'] = "concurrency"
             config['type'] = 0
             config['required'] = True
@@ -102,7 +102,7 @@ with open(DEFINITION_FILE) as f:
             else:
                 command['name'] = spinalcase(ansible_module)
             module_online_help = "%s%s_module.html" % (ANSIBLE_ONLINE_DOCS_URL, ansible_module)
-            command['description'] = str(doc.get('short_description')) + "\n Further documentation availiable at " + module_online_help
+            command['description'] = str(doc.get('short_description')) + "\n Further documentation available at " + module_online_help
             command['arguments'] = []
 
             # Arguments
