@@ -413,7 +413,7 @@
 
 - name: ACME
   category: "IT Services"
-  description: "Automatic Certificate Management Environment of Linux hosts"
+  description: "Control Automatic Certificate Management Environment on Linux hosts"
   config:
     - display: Username
       name: creds
