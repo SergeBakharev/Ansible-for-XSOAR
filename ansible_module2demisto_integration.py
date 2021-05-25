@@ -13,7 +13,7 @@ BASE_PATH = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in this location
 DEFINITION_FILE = 'definitions.yml'  # the translation definition file
 OUTPUT_DIR = os.path.join(BASE_PATH, 'content/Packs/Ansible_Powered_Integrations/Integrations/')
-ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.19017'  # The tag of demisto/ansible-runner to use
+ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.20246'  # The tag of demisto/ansible-runner to use
 ANSIBLE_ONLINE_DOCS_URL = 'https://docs.ansible.com/ansible/2.9/modules/'  # The URL of the online module documentation
 
 
@@ -235,12 +235,8 @@ with open(DEFINITION_FILE) as f:
 
         
         # Generate python script
-        integration_script = '''import json
-import traceback
-import ansible_runner
+        integration_script = '''import traceback
 import ssh_agent_setup
-from typing import Dict, cast
-
 import demistomock as demisto  # noqa: F401
 from CommonServerPython import *  # noqa: F401
 
