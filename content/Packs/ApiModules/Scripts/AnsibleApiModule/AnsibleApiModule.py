@@ -1,43 +1,60 @@
 from CommonServerPython import *  # noqa: F403
 from CommonServerUserPython import *  # noqa: F403
-
+import ansible_runner  # pylint: disable=E0401
+import json
 from typing import Dict, cast
+
 import demistomock as demisto  # noqa: F401
 
 # Dict to Markdown Converter adapted from https://github.com/PolBaladas/torsimany/
+
+
 def dict2md(json_block, depth=0):
     markdown = ""
+
     if isinstance(json_block, dict):
-        markdown = parseDict(json_block, depth)
+        markdown = parse_dict(json_block, depth)
     if isinstance(json_block, list):
-        markdown = parseList(json_block, depth)
+        markdown += parse_list(json_block, depth)
     return markdown
 
 
-def parseDict(d, depth):
+def parse_dict(d, depth):
     markdown = ""
+
+    # In the case of a dict of dicts/lists, we want to show the "leaves" of the tree first.
+    # This will improve readability by avoiding the scenario where "leaves" are shown in between
+    # "branches", resulting in their relation to the header to become unclear to the reader.
+
+    for k in d:
+        if not isinstance(d[k], (dict, list)):
+            markdown += build_value_chain(k, d[k], depth + 1)
+
     for k in d:
         if isinstance(d[k], (dict, list)):
-            markdown += addHeader(k, depth)
+            markdown += add_header(k, depth + 1)
             markdown += dict2md(d[k], depth + 1)
-        else:
-            markdown += buildValueChain(k, d[k], depth)
     return markdown
 
 
-def parseList(rawlist, depth):
+def parse_list(rawlist, depth):
     markdown = ""
+    default_header_value = "list"
     for value in rawlist:
         if not isinstance(value, (dict, list)):
             index = rawlist.index(value)
-            markdown += buildValueChain(index, value, depth)
+            item_depth = depth + 1  # since a header was added previously items should be idented one
+            markdown += build_value_chain(index, value, item_depth)
         else:
+            # It makes list  more readable to have a header of some sort
             header_value = find_header_in_dict(value)
             if header_value is None:
-                header_value = "list"
-
-            markdown += addHeader(header_value, depth)
-            markdown += parseDict(value, depth)
+                header_value = default_header_value
+            markdown += add_header(header_value, depth)
+            if isinstance(value, dict):
+                markdown += parse_dict(value, depth)
+            if isinstance(value, list):
+                markdown += parse_list(value, depth)
     return markdown
 
 
@@ -45,7 +62,7 @@ def find_header_in_dict(rawdict):
     header = None
     # Finds a suitible value to use as a header
     if not isinstance(rawdict, dict):
-        return  header # Not a dict, nothing to do
+        return header  # Not a dict, nothing to do
 
     id_search = [val for key, val in rawdict.items() if 'id' in key]
     name_search = [val for key, val in rawdict.items() if 'name' in key]
@@ -56,28 +73,27 @@ def find_header_in_dict(rawdict):
         header = name_search[0]
 
     return header
-            
 
-def buildHeaderChain(depth):
+
+def build_header_chain(depth):
     list_tag = '* '
     htag = '#'
+    tab = "  "
 
-    chain = list_tag * (bool(depth)) + htag * (depth + 1) + \
-        ' value ' + (htag * (depth + 1) + '\n')
+    chain = (tab * depth) + list_tag * (bool(depth)) + htag * (depth + 1) + ' value\n'
     return chain
 
 
-def buildValueChain(key, value, depth):
-    tab = "  "
+def build_value_chain(key, value, depth):
+    tab = '  '
     list_tag = '* '
 
-    chain = tab * (bool(depth - 1)) + list_tag + \
-        str(key) + ": " + str(value) + "\n"
+    chain = (tab * depth) + list_tag + str(key) + ": " + str(value) + "\n"
     return chain
 
 
-def addHeader(value, depth):
-    chain = buildHeaderChain(depth)
+def add_header(value, depth):
+    chain = build_header_chain(depth)
     chain = chain.replace('value', value.title())
     return chain
 
@@ -96,7 +112,7 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
 
     sshkey = ""
 
-    inventory: Dict[dict, str] = {}
+    inventory: Dict[str, dict] = {}
     inventory['all'] = {}
     inventory['all']['hosts'] = {}
 
@@ -128,7 +144,7 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
                     new_host['ansible_port'] = demisto.params().get('port')
 
             # Common SSH based auth options
-            if host_type in ['ssh','nxos', 'ios']:
+            if host_type in ['ssh', 'nxos', 'ios']:
                 # SSH Key saved in credential manager selection
                 if demisto.params().get('creds', {}).get('credentials').get('sshkey'):
                     username = demisto.params().get('creds', {}).get('credentials').get('user')
@@ -196,12 +212,15 @@ def generate_ansible_inventory(args: Dict[str, Any], host_type: str = "local"):
     return inventory, sshkey
 
 
+host_type: str  # Global defined within the integration module. Defined here because https://github.com/python/mypy/issues/5732
+
 
 def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandResults:
 
     readable_output = ""
     sshkey = ""
     fork_count = 1   # default to executing against 1 host at a time
+    global host_type
 
     if args.get('concurrency'):
         fork_count = cast(int, args.get('concurrency'))
@@ -219,7 +238,7 @@ def generic_ansible(integration_name, command, args: Dict[str, Any]) -> CommandR
         module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
         # If this isn't host based, then all the integratation parms will be used as command args
-    if host_type == 'local': 
+    if host_type == 'local':
         for arg_key, arg_value in demisto.params().items():
             module_args += "%s=\"%s\" " % (arg_key, arg_value)
 
