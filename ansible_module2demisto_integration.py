@@ -94,9 +94,9 @@ with open(DEFINITION_FILE) as f:
                 command_prefix = integration_def.get('command_prefix')
             else:
                 if len(integration_def.get('name').split(' ')) == 1:  # If the definition `name` is single word then trust the caps
-                    command_prefix = integration['name'].lower()
+                    command_prefix = name.lower()
                 else:
-                    command_prefix = spinalcase(integration['name'])
+                    command_prefix = spinalcase(name)
 
 
             if not spinalcase(ansible_module).startswith(command_prefix + '-'):
@@ -152,14 +152,15 @@ with open(DEFINITION_FILE) as f:
                     if option.get('required') == True:
                         argument['required'] = True
 
-                    if option.get('default') is not None:
-                        if type(option.get('default')) is bool:  # The default True/False str cast of bool can be confusing. Using Yes/No instead.
-                            if option.get('default') is True:
-                                argument['defaultValue'] = "Yes"
-                            if option.get('default') is False:
-                                argument['defaultValue'] = "No"
-                        else:
-                            argument['defaultValue'] = str(option.get('default'))
+                    if str(option.get('default')) not in ['[]', '{}']:  # Ansible docs have a empty list/dict as defaults....
+                        if option.get('default') is not None:
+                            if type(option.get('default')) is bool:  # The default True/False str cast of bool can be confusing. Using Yes/No instead.
+                                if option.get('default') is True:
+                                    argument['defaultValue'] = "Yes"
+                                if option.get('default') is False:
+                                    argument['defaultValue'] = "No"
+                            else:
+                                argument['defaultValue'] = str(option.get('default'))
 
                     if option.get('choices') is not None:
                         argument['predefined'] = []
@@ -260,9 +261,9 @@ from AnsibleApiModule import *  # noqa: E402
 '''
 
         if integration_def.get('hostbasedtarget') is not None:
-            integration_script +="host_type =  '%s'" % integration_def.get('hostbasedtarget')
+            integration_script +="host_type = '%s'" % integration_def.get('hostbasedtarget')
         else:
-            integration_script +="host_type =  'local'"
+            integration_script +="host_type = 'local'"
         
         integration_script += '''
 
@@ -296,9 +297,9 @@ def main() -> None:
                 command_prefix = integration_def.get('command_prefix')
             else:
                 if len(integration_def.get('name').split(' ')) == 1:  # If the definition `name` is single word then trust the caps
-                    command_prefix = integration['name'].lower()
+                    command_prefix = name.lower()
                 else:
-                    command_prefix = spinalcase(integration['name'])
+                    command_prefix = spinalcase(name)
 
             demisto_command = ""
             if not spinalcase(ansible_module).startswith(command_prefix + '-'):
@@ -306,7 +307,7 @@ def main() -> None:
             else:
                 demisto_command = spinalcase(ansible_module)
 
-            integration_script += "\n        elif demisto.command() == '%s':\n            return_results(generic_ansible('%s', '%s', args, int_params, host_type))" % (demisto_command, name.lower(), ansible_module,)
+            integration_script += "\n        elif command == '%s':\n            return_results(generic_ansible('%s', '%s', args, int_params, host_type))" % (demisto_command, name.lower(), ansible_module,)
 
         integration_script += '''
     # Log exceptions and return errors
@@ -319,7 +320,8 @@ def main() -> None:
 
 
 if __name__ in ('__main__', '__builtin__', 'builtins'):
-    main()'''
+    main()
+'''
     
         
         integration['script'] = {
