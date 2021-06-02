@@ -151,13 +151,24 @@ with open(DEFINITION_FILE) as f:
                         argument['required'] = True
 
                     if option.get('default') is not None:
-                        argument['defaultValue'] = str(option.get('default'))
+                        if type(option.get('default')) is bool:  # The default True/False str cast of bool can be confusing. Using Yes/No instead.
+                            if option.get('default') is True:
+                                argument['defaultValue'] = "Yes"
+                            if option.get('default') is False:
+                                argument['defaultValue'] = "No"
+                        else:
+                            argument['defaultValue'] = str(option.get('default'))
 
                     if option.get('choices') is not None:
                         argument['predefined'] = []
                         argument['auto'] = "PREDEFINED"
                         for choice in option.get('choices'):
                             argument['predefined'].append(str(choice))
+                    else:
+                        if type(option.get('default')) is bool:  # Ansible Docs don't explicitly mark true/false as choices for bools, so we must do it ourselves
+                            argument['predefined'] = ['Yes', 'No']
+                            argument['auto'] = "PREDEFINED"
+
 
                     if option.get('type') in ["list", "dict"]:
                         argument['isArray'] = True
