@@ -13,7 +13,7 @@ BASE_PATH = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in this location
 DEFINITION_FILE = 'definitions.yml'  # the translation definition file
 OUTPUT_DIR = os.path.join(BASE_PATH, 'content/Packs/Ansible_Powered_Integrations/Integrations/')
-ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.20246'  # The tag of demisto/ansible-runner to use
+ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.20435'  # The tag of demisto/ansible-runner to use
 ANSIBLE_ONLINE_DOCS_URL = 'https://docs.ansible.com/ansible/2.9/modules/'  # The URL of the online module documentation
 
 
@@ -265,9 +265,14 @@ def main() -> None:
     # SSH Key integration requires ssh_agent to be running in the background
     ssh_agent_setup.setup()
 
+    # Common Inputs
+    command = demisto.command()
+    args = demisto.args()
+    int_params = demisto.params()
+
     try:
 
-        if demisto.command() == 'test-module':
+        if command == 'test-module':
             # This is the call made when pressing the integration Test button.
             return_results('ok')'''
         
@@ -287,13 +292,13 @@ def main() -> None:
             else:
                 demisto_command = spinalcase(ansible_module)
 
-            integration_script += "\n        elif demisto.command() == '%s':\n            return_results(generic_ansible('%s', '%s', demisto.args()))" % (demisto_command, integration['name'].lower(), ansible_module,)
+            integration_script += "\n        elif demisto.command() == '%s':\n            return_results(generic_ansible('%s', '%s', args, int_params, host_type))" % (demisto_command, integration['name'].lower(), ansible_module,)
 
         integration_script += '''
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {demisto.command()} command.\\nError:\\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
 
 
 # ENTRY POINT
