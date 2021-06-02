@@ -105,7 +105,7 @@ def rec_ansible_key_strip(obj: Dict[Any, Any]):
 
 
 # Convert to camelCase, like .title() but start with lowercase.
-def camelCase(st):
+def camelCase(st: str):
     output = ''.join(x for x in st.title() if x.isalnum())
     return output[0].lower() + output[1:]
 
