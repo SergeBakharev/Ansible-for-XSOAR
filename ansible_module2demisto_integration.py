@@ -3,7 +3,7 @@ from ansible.plugins.loader import fragment_loader
 from ansible.utils import plugin_docs
 import os
 import re
-from stringcase import spinalcase
+from stringcase import spinalcase, camelcase
 from pathlib import Path
 import base64
 
@@ -43,9 +43,11 @@ with open(DEFINITION_FILE) as f:
         # integration settings
         integration['display'] = integration_def.get('name')
         if len(integration_def.get('name').split()) == 1:  # If the definition `name` is single word then trust the caps
-            integration['name'] = integration_def.get('name')
+            integration['name'] = 'ansible' + integration_def.get('name')  # Prefix all theses generated integrations with 'ansible' to reduce the risk of colliding
+            name = integration_def.get('name')
         else:
-            integration['name'] = integration_def.get('name').replace(' ', '')
+            integration['name'] = 'ansible' + integration_def.get('name').replace(' ', '')
+            name = integration_def.get('name').replace(' ', '')
         integration['category'] = integration_def.get('category')
         integration['description'] = integration_def.get('description')
         integration['commonfields'] = {
@@ -183,7 +185,7 @@ with open(DEFINITION_FILE) as f:
                     for output, details in returndocs_dict.items():
                         output_to_add = {}
                         if details is not None:
-                            output_to_add['contextPath'] = str("%s.%s.%s" % (integration['name'], ansible_module, output))
+                            output_to_add['contextPath'] = str("%s.%s.%s" % (name, camelcase(ansible_module), output))
 
                             # remove ansible link markup 
                             # https://docs.ansible.com/ansible/latest/dev_guide/developing_modules_documenting.html#linking-within-module-documentation
@@ -304,13 +306,13 @@ def main() -> None:
             else:
                 demisto_command = spinalcase(ansible_module)
 
-            integration_script += "\n        elif demisto.command() == '%s':\n            return_results(generic_ansible('%s', '%s', args, int_params, host_type))" % (demisto_command, integration['name'].lower(), ansible_module,)
+            integration_script += "\n        elif demisto.command() == '%s':\n            return_results(generic_ansible('%s', '%s', args, int_params, host_type))" % (demisto_command, name.lower(), ansible_module,)
 
         integration_script += '''
     # Log exceptions and return errors
     except Exception as e:
         demisto.error(traceback.format_exc())  # print the traceback
-        return_error(f'Failed to execute {command} command.\nError:\n{str(e)}')
+        return_error(f'Failed to execute {command} command.\\nError:\\n{str(e)}')
 
 
 # ENTRY POINT
