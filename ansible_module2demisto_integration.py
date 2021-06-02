@@ -182,9 +182,10 @@ with open(DEFINITION_FILE) as f:
                                 for line in details.get('description'):
                                     clean_line_of_description = re.sub('[ILUCMB]\((.+?)\)','`\g<1>`', line) 
                                     output_to_add['description'] = output_to_add['description'] + "\n" + clean_line_of_description
+                                output_to_add['description'] = output_to_add['description'].strip()
                             else:
                                 clean_line_of_description = re.sub('[ILUCMB]\((.+?)\)','`\g<1>`',str(details.get('description'))) 
-                                output_to_add['description'] = clean_line_of_description
+                                output_to_add['description'] = clean_line_of_description.strip()
 
                             if details.get('type') == "str":
                                 output_to_add['type'] = "string"
