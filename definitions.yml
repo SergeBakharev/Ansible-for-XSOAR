@@ -17,6 +17,7 @@
   ignored_args:
   - api_token
   - endpoint
+  test_command: hcloud_datacenter_info
   ansible_modules:
   - hcloud_datacenter_info
   - hcloud_floating_ip_info
@@ -305,6 +306,7 @@
       defaultvalue: 22
       required: true
       additionalinfo: The default port to use if one is not specified in the commands `host` argument.
+  test_command: nxos_facts
   ansible_modules:
   - nxos_aaa_server
   - nxos_aaa_server_host
@@ -481,6 +483,7 @@
       defaultvalue: 22
       required: true
       additionalinfo: The default port to use if one is not specified in the commands `host` argument.
+  test_command: ios_facts
   ansible_modules:
   - ios_banner
   - ios_bgp
@@ -548,6 +551,7 @@
       required: true
       defaultvalue: "True"
       additionalinfo: Allows connection when SSL certificates are not valid. Set to `false` when certificates are not trusted.
+  test_command: vmware_about_info
   ansible_modules:
   - vmware_about_info
   - vmware_category
@@ -740,6 +744,7 @@
     type: 0
     required: true
     additionalinfo: Aliyun Cloud region
+  test_command: ali_instance_info
   ansible_modules:
   - ali_instance
   - ali_instance_info
@@ -803,6 +808,7 @@
     required: true
     defaultvalue: "latest"
     additionalinfo: Selects an API profile to use when communicating with Azure services. Default value of `latest` is appropriate for public clouds; future values will allow use with Azure Stack.
+  test_command: azure_rm_resource_info
   ansible_modules:
   - azure_rm_autoscale
   - azure_rm_autoscale_info
@@ -903,6 +909,7 @@
     required: true
     defaultvalue: "latest"
     additionalinfo: Selects an API profile to use when communicating with Azure services. Default value of `latest` is appropriate for public clouds; future values will allow use with Azure Stack.
+  test_command: azure_rm_virtualnetwork_info
   ansible_modules:
   - azure_rm_azurefirewall
   - azure_rm_azurefirewall_info

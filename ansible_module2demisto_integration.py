@@ -288,9 +288,19 @@ def main() -> None:
     try:
 
         if command == 'test-module':
-            # This is the call made when pressing the integration Test button.
-            return_results('ok')'''
-        
+'''
+
+        if integration_def.get('test_command') is not None:
+            test_command = integration_def.get('test_command')
+            integration_script += '''            # This is the call made when pressing the integration Test button.
+            result = generic_ansible('{demisto_command}', '{test_command}', args, int_params, host_type)
+
+            return_results(result)
+'''
+        else:
+            integration_script += '''            # This is the call made when pressing the integration Test button.
+            return_results('This integration does not support testing from this screen. Please refer to the documentation for details on how to perform configuration tests.')
+'''
         for ansible_module in integration_def.get('ansible_modules'):
 
             if integration_def.get('command_prefix') is not None:
