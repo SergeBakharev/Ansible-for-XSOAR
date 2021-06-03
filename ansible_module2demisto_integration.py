@@ -295,7 +295,10 @@ def main() -> None:
             integration_script += '''            # This is the call made when pressing the integration Test button.
             result = generic_ansible('%s', '%s', args, int_params, host_type)
 
-            return_results(result)
+            if result:
+                return_results('ok')
+            else:
+                return_results(result)
 ''' % (name.lower(), test_command)
         else:
             integration_script += '''            # This is the call made when pressing the integration Test button.
