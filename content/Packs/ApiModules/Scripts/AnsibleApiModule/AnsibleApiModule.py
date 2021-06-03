@@ -282,7 +282,9 @@ def generic_ansible(integration_name: str, command: str,
                 if (type(result) == dict) and (host != 'localhost'):
                     result['host'] = host
                     outputs_key_field = 'host'  # updates previous outputs that share this key, neat!
-                result['status'] = status.strip()
+                
+                if (type(result) == dict):
+                    result['status'] = status.strip()
 
                 results.append(result)
             if each_host_event['event'] == "runner_on_unreachable":
