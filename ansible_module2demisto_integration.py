@@ -13,7 +13,7 @@ BASE_PATH = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 MODULE_DIR = os.path.join(BASE_PATH, 'ansible/lib/ansible/modules/')  # Modules are stored in this location
 DEFINITION_FILE = 'definitions.yml'  # the translation definition file
 OUTPUT_DIR = os.path.join(BASE_PATH, 'content/Packs/Ansible_Powered_Integrations/Integrations/')
-ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.20884'  # The tag of demisto/ansible-runner to use
+ANSIBLE_RUNNER_DOCKER_VERSION = '1.0.0.20942'  # The tag of demisto/ansible-runner to use
 ANSIBLE_ONLINE_DOCS_URL = 'https://docs.ansible.com/ansible/2.9/modules/'  # The URL of the online module documentation
 
 
