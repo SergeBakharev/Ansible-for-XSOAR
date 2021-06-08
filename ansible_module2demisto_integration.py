@@ -43,10 +43,10 @@ with open(DEFINITION_FILE) as f:
         # integration settings
         integration['display'] = integration_def.get('name')
         if len(integration_def.get('name').split()) == 1:  # If the definition `name` is single word then trust the caps
-            integration['name'] = 'ansible' + integration_def.get('name')  # Prefix all theses generated integrations with 'ansible' to reduce the risk of colliding
+            integration['name'] = 'Ansible' + integration_def.get('name')  # Prefix all theses generated integrations with 'ansible' to reduce the risk of colliding
             name = integration_def.get('name')
         else:
-            integration['name'] = 'ansible' + integration_def.get('name').replace(' ', '')
+            integration['name'] = 'Ansible' + integration_def.get('name').replace(' ', '')
             name = integration_def.get('name').replace(' ', '')
         integration['category'] = integration_def.get('category')
         integration['description'] = integration_def.get('description')
